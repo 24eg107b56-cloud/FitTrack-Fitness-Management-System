@@ -2,7 +2,10 @@
    FitTrack - Central Configuration & API Utility
    ======================================================== */
 
-const API_BASE = 'http://localhost:8080/api';
+// Automatically use current origin in cloud/Docker deployments, or localhost:8080 during local split dev
+const API_BASE = (typeof window !== 'undefined' && window.location.origin && window.location.origin.startsWith('http') && !window.location.origin.includes(':5500') && !window.location.origin.includes(':3000'))
+  ? `${window.location.origin}/api`
+  : 'http://localhost:8080/api';
 
 // Fallback in-memory state for immediate browser preview before backend is launched
 const MOCK_DB = {
