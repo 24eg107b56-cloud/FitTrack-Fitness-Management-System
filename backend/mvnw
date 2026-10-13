@@ -1,0 +1,13 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Maven Wrapper Shell Script
+# ----------------------------------------------------------------------------
+
+WRAPPER_JAR="$(dirname "$0")/.mvn/wrapper/maven-wrapper.jar"
+
+if [ ! -f "$WRAPPER_JAR" ]; then
+    mkdir -p "$(dirname "$0")/.mvn/wrapper"
+    curl -o "$WRAPPER_JAR" https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar
+fi
+
+exec java -Dfile.encoding=UTF-8 -jar "$WRAPPER_JAR" "$@"

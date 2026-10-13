@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workouts – FitTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">⚡</div>
+        <span>FitTrack</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Dashboard</a></li>
+        <li><a href="workouts.html" class="nav-link active">Workouts</a></li>
+        <li><a href="bmi-weight.html" class="nav-link">Weight & BMI</a></li>
+        <li><a href="goals.html" class="nav-link">Goals</a></li>
+      </ul>
+      <div class="api-status-pill">
+        <div class="status-dot online" id="statusDot"></div>
+        <span id="statusText">Checking API...</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Offline Notification Banner -->
+    <div id="offlineBanner" class="notification-banner" style="display: none;">
+      <div>
+        <strong>ℹ️ Running in Local Preview Mode:</strong> The Spring Boot backend on <code>http://localhost:8080</code> is not connected. Local demo mode is active.
+      </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-title">
+        <h1>Workout Log</h1>
+        <p>Record your exercise routines, sets, reps, weights, and energy burned.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('workoutModal')">+ Add Workout</button>
+      </div>
+    </div>
+
+    <!-- Mini KPI Banner -->
+    <section class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
+      <div class="kpi-card" style="padding: 16px 20px;">
+        <div class="kpi-icon icon-emerald" style="width: 40px; height: 40px; font-size: 1.1rem;">🏋️</div>
+        <div class="kpi-info">
+          <div class="kpi-label">Workouts</div>
+          <div class="kpi-value" id="kpiTotalWorkouts" style="font-size: 1.5rem;">0</div>
+        </div>
+      </div>
+      <div class="kpi-card" style="padding: 16px 20px;">
+        <div class="kpi-icon icon-cyan" style="width: 40px; height: 40px; font-size: 1.1rem;">⏱️</div>
+        <div class="kpi-info">
+          <div class="kpi-label">Total Duration</div>
+          <div class="kpi-value" id="kpiTotalMinutes" style="font-size: 1.5rem;">0m</div>
+        </div>
+      </div>
+      <div class="kpi-card" style="padding: 16px 20px;">
+        <div class="kpi-icon icon-amber" style="width: 40px; height: 40px; font-size: 1.1rem;">🔥</div>
+        <div class="kpi-info">
+          <div class="kpi-label">Burned Calories</div>
+          <div class="kpi-value" id="kpiTotalCalories" style="font-size: 1.5rem;">0 kcal</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workouts Content Card -->
+    <section class="card">
+      
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-pills">
+          <button class="filter-pill active" data-category="all">All</button>
+          <button class="filter-pill" data-category="Strength">Strength</button>
+          <button class="filter-pill" data-category="Cardio">Cardio</button>
+          <button class="filter-pill" data-category="HIIT">HIIT</button>
+          <button class="filter-pill" data-category="Flexibility">Flexibility</button>
+        </div>
+
+        <div style="min-width: 250px;">
+          <input type="text" id="searchWorkouts" class="form-control" placeholder="Search exercises...">
+        </div>
+      </div>
+
+      <!-- Workouts Table -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Exercise & Notes</th>
+              <th>Category</th>
+              <th>Sets × Reps</th>
+              <th>Weight</th>
+              <th>Duration / Energy</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="workoutsTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Modal: Add Workout -->
+  <div class="modal-backdrop" id="workoutModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Workout Session</h3>
+        <button class="modal-close" onclick="closeModal('workoutModal')">&times;</button>
+      </div>
+      <form id="workoutForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="exerciseName">Exercise Name *</label>
+            <input type="text" id="exerciseName" class="form-control" placeholder="e.g. Barbell Squats, Bench Press" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="workoutCategory">Category</label>
+              <select id="workoutCategory" class="form-control">
+                <option value="Strength">Strength</option>
+                <option value="Cardio">Cardio</option>
+                <option value="HIIT">HIIT</option>
+                <option value="Flexibility">Flexibility</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="workoutDate">Date *</label>
+              <input type="date" id="workoutDate" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="workoutSets">Sets *</label>
+              <input type="number" id="workoutSets" class="form-control" min="1" value="4" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="workoutReps">Reps *</label>
+              <input type="number" id="workoutReps" class="form-control" min="1" value="12" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="workoutWeight">Weight Lifted (kg)</label>
+              <input type="number" id="workoutWeight" class="form-control" min="0" step="0.5" value="0">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="workoutDuration">Duration (minutes)</label>
+              <input type="number" id="workoutDuration" class="form-control" min="1" value="30">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="workoutCalories">Calories Burned (kcal)</label>
+              <input type="number" id="workoutCalories" class="form-control" min="0" placeholder="Auto-calculated (7.5 kcal/min)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="workoutNotes">Notes / Performance Log</label>
+            <textarea id="workoutNotes" class="form-control" rows="2" placeholder="e.g., Kept rest periods under 90s, good intensity"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('workoutModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Workout</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      FitTrack – Fitness Management System &copy; 2026. Java Full Stack (Spring Boot + MySQL + REST API).
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/workouts.js"></script>
+</body>
+</html>
