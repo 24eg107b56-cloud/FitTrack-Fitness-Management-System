@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/frontend/index.html" },
+    { "source": "/index.html", "destination": "/frontend/index.html" },
+    { "source": "/workouts", "destination": "/frontend/workouts.html" },
+    { "source": "/workouts.html", "destination": "/frontend/workouts.html" },
+    { "source": "/bmi-weight", "destination": "/frontend/bmi-weight.html" },
+    { "source": "/bmi-weight.html", "destination": "/frontend/bmi-weight.html" },
+    { "source": "/goals", "destination": "/frontend/goals.html" },
+    { "source": "/goals.html", "destination": "/frontend/goals.html" },
+    { "source": "/css/(.*)", "destination": "/frontend/css/$1" },
+    { "source": "/js/(.*)", "destination": "/frontend/js/$1" },
+    { "source": "/(.*)", "destination": "/frontend/$1" }
+  ]
+}
